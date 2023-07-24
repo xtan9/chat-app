@@ -5,7 +5,7 @@ import { getEnv } from "./utils";
 import { NextAuthOptions } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
-  adapter: UpstashRedisAdapter(db),
+  adapter: UpstashRedisAdapter(db, { baseKeyPrefix: "chat:" }),
   session: {
     strategy: "jwt",
   },
@@ -20,23 +20,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log({ token });
-      console.log({ user });
-      const dbUser = (await db.get(`user:${token.id}`)) as User | null;
-      console.log({ dbUser });
-      if (!dbUser) {
-        token.id = user.id;
-        return token;
-      }
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        picture: dbUser.image,
-      };
+      if (user) token.id = user.id;
+      return token;
     },
     async session({ session, token }) {
-      console.log({ session });
       if (token) {
         session.user.id = token.id;
         session.user.name = token.name;
