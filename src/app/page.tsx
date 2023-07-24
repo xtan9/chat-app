@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
 import { Toaster } from "react-hot-toast";
 
